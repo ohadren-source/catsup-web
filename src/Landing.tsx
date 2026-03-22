@@ -1,13 +1,55 @@
-import React from 'react';
 import './Landing.css';
 
 interface LandingProps {
   onEnter: () => void;
 }
 
+const SAUCE_HOME = 'https://sauc-e.com';
+const CHECKOUT_URL = 'https://sauc-e.com/checkitout';
+
 export default function Landing({ onEnter }: LandingProps) {
   return (
     <div className="catsup-landing">
+      {/* ===== sauc-e HEADER ===== */}
+      <header className="sauce-header">
+        <a
+          href={SAUCE_HOME}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="sauce-logo-link"
+        >
+          <span className="sauce-name">sauc-e</span>
+          <span className="sauce-tagline"> where HOME is the </span>
+          <span className="sauce-heart">❤️</span>
+        </a>
+        <nav className="sauce-nav">
+          <a
+            href={CHECKOUT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="sauce-nav-link"
+          >
+            Check It Out Y'all
+          </a>
+          <a
+            href={`${SAUCE_HOME}/about`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="sauce-nav-link"
+          >
+            About
+          </a>
+          <a
+            href={`${SAUCE_HOME}/contact`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="sauce-nav-link"
+          >
+            Contact
+          </a>
+        </nav>
+      </header>
+
       {/* HERO */}
       <section className="hero">
         <div className="hero-content">
