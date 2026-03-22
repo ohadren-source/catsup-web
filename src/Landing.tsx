@@ -54,7 +54,7 @@ export default function Landing({ onEnter }: LandingProps) {
       <section className="hero">
         <div className="hero-content">
           <img src="/catsup_logo_1024x1024.jpg" alt="CATSUP" className="bowl-logo" />
-          <h1>CATSUP (3,6,9)</h1>
+          <h1>CATS_UP (3,6,9)</h1>
           <p className="tagline">Learn Through Questions</p>
           <p className="subtitle">Understanding = Questions / Ego</p>
           <button className="enter-btn" onClick={onEnter}>Enter App</button>
