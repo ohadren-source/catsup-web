@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import './App.css'
+import Landing from './Landing'
 
 // ============================================================================
 // BACKEND URL (Only this - no API keys in app!)
@@ -24,6 +25,7 @@ function App() {
   // STATE
   // ============================================================================
 
+  const [showLanding, setShowLanding] = useState(true)
   const [isSubscribed] = useState(false)
   const [lessonCount, setLessonCount] = useState(0)
   const [question, setQuestion] = useState('')
@@ -125,6 +127,10 @@ function App() {
   // ============================================================================
   // RENDER
   // ============================================================================
+
+  if (showLanding) {
+    return <Landing onEnter={() => setShowLanding(false)} />
+  }
 
   return (
     <div className="catsup-page">
