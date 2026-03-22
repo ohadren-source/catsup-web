@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CATSUP - Never Too Late to Catch Up</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    .chat-bubble-user {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+    .chat-bubble-ai {
+      background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+    }
+    .glow-red {
+      box-shadow: 0 0 40px rgba(239, 68, 68, 0.3);
+    }
+    .subject-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .typing-indicator span {
+      animation: bounce 1.4s infinite ease-in-out;
+    }
+    .typing-indicator span:nth-child(1) { animation-delay: 0s; }
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-8px); }
+    }
+    .fade-in {
+      animation: fadeIn 0.3s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="bg-gray-950 text-white min-h-screen">
+  <div id="app">
+    
+    <!-- Landing / Subject Selection -->
+    <div id="landingPage" class="min-h-screen">
+      <!-- Header -->
+      <header class="p-4 border-b border-gray-800">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="text-3xl">🍅</div>
+            <div>
+              <h1 class="text-xl font-bold text-red-400">CATSUP</h1>
+              <p class="text-xs text-gray-500">Never Too Late to Catch Up</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div id="questionCounter" class="text-sm text-gray-400">
+              <span id="qCount">10</span> free questions this week
+            </div>
+            <button onclick="showUpgrade()" class="bg-red-600 hover:bg-red-500 text-white text-sm px-4 py-2 rounded-lg font-semibold transition">
+              Upgrade
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Hero Section -->
+      <section class="py-16 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+          <h2 class="text-4xl md:text-5xl font-black mb-4">
+            We don't give answers.
+            <span class="text-red-400">We build thinkers.</span>
+          </h2>
+          <p class="text-xl text-gray-400 mb-8">
+            Socratic method tutoring powered by AI. Ask a question, we'll ask one back.
+          </p>
+        </div>
+      </section>
+
+      <!-- Subject Selection -->
+      <section class="px-4 pb-16">
+        <div class="max-w-4xl mx-auto">
+          <h3 class="text-2xl font-bold mb-6 text-center">What do you need help with?</h3>
+          
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <button onclick="selectSubject('math', '📐')" class="subject-card bg-gray-900 border border-gray-800 rounded-xl p-6 text-center transition hover:border-red-500">
+              <div class="text-4xl mb-2">📐</div>
+              <div class="font-semibold">Math</div>
+              <div class="text-xs text-gray-500">Algebra to Calculus</div>
+            </button>
+            
+            <button onclick="selectSubject('science', '🔬')" class="subject-card bg-gray-900 border border-gray-800 rounded-xl p-6 text-center transition hover:border-red-500">
+              <div class="text-4xl mb-2">🔬</div>
+              <div class="font-semibold">Science</div>
+              <div class="text-xs text-gray-500">Physics, Chemistry, Bio</div>
+            </button>
+            
+            <button onclick="selectSubject('english', '📚')" class="subject-card bg-gray-900 border border-gray-800 rounded-xl p-6 text-center transition hover:border-red-500">
+              <div class="text-4xl mb-2">📚</div>
+              <div class="font-semibold">English</div>
+              <div class="text-xs text-gray-500">Writing & Literature</div>
+            </button>
+            
+            <button onclick="selectSubject('history', '🏛️')" class="subject-card bg-gray-900 border border-gray-800 rounded-xl p-6 text-center transition hover:border-red-500">
+              <div class="text-4xl mb-2">🏛️</div>
+              <div class="font-semibold">History</div>
+              <div class="text-xs text-gray-500">World & US History</div>
+            </button>
+            
+            <button onclick="selectSubject('coding', '💻')" class="subject-card bg-gray-900 border border-gray-800 rounded-xl p-6 text-center transition hover:border-red-500">
+              <div class="text-4xl mb-2">💻</div>
+              <div class="font-semibold">Coding</div>
+              <div class="text-xs text-gray-500">Python, JS, More</div>
+            </button>
+            
+            <button onclick="selectSubject('languages', '🌍')" class="subject-card bg-gray-900 border border-gray-800 rounded-xl p-6 text-center transition hover:border-red-500">
+              <div class="text-4xl mb-2">🌍</div>
+              <div class="font-semibold">Languages</div>
+              <div class="text-xs text-gray-500">Spanish, French, More</div>
+            </button>
+            
+            <button onclick="selectSubject('testprep', '📝')" class="subject-card bg-gray-900 border border-gray-800 rounded-xl p-6 text-center transition hover:border-red-500">
+              <div class="text-4xl mb-2">📝</div>
+              <div class="font-semibold">Test Prep</div>
+              <div class="text-xs text-gray-500">SAT, ACT, AP Exams</div>
+            </button>
+            
+            <button onclick="selectSubject('other', '🎯')" class="subject-card bg-gray-900 border border-gray-800 rounded-xl p-6 text-center transition hover:border-red-500">
+              <div class="text-4xl mb-2">🎯</div>
+              <div class="font-semibold">Other</div>
+              <div class="text-xs text-gray-500">Ask anything</div>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- How It Works -->
+      <section class="px-4 pb-16 bg-gray-900/50">
+        <div class="max-w-4xl mx-auto py-12">
+          <h3 class="text-2xl font-bold mb-8 text-center">How CATSUP Works</h3>
+          
+          <div class="grid md:grid-cols-3 gap-8">
+            <div class="text-center">
+              <div class="w-16 h-16 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="text-2xl">❓</span>
+              </div>
+              <h4 class="font-bold mb-2">1. You Ask</h4>
+              <p class="text-gray-400 text-sm">Tell us what you're stuck on. Homework, concepts, test prep - anything.</p>
+            </div>
+            
+            <div class="text-center">
+              <div class="w-16 h-16 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="text-2xl">🤔</span>
+              </div>
+              <h4 class="font-bold mb-2">2. We Ask Back</h4>
+              <p class="text-gray-400 text-sm">Instead of giving answers, we ask questions that guide you to understanding.</p>
+            </div>
+            
+            <div class="text-center">
+              <div class="w-16 h-16 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="text-2xl">💡</span>
+              </div>
+              <h4 class="font-bold mb-2">3. You Learn</h4>
+              <p class="text-gray-400 text-sm">Real understanding that sticks. Not just answers you'll forget tomorrow.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pricing Preview -->
+      <section class="px-4 py-16">
+        <div class="max-w-4xl mx-auto">
+          <h3 class="text-2xl font-bold mb-8 text-center">Simple Pricing</h3>
+          
+          <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+              <h4 class="font-bold text-lg mb-2">Free</h4>
+              <div class="text-3xl font-black mb-4">$0</div>
+              <ul class="space-y-2 text-sm text-gray-400 mb-6">
+                <li>✓ 10 questions per week</li>
+                <li>✓ All subjects</li>
+                <li>✓ Socratic method</li>
+              </ul>
+              <button class="w-full bg-gray-800 text-white py-2 rounded-lg font-semibold">Current Plan</button>
+            </div>
+            
+            <div class="bg-gray-900 border-2 border-red-500 rounded-xl p-6 relative glow-red">
+              <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-red-500 text-white text-xs px-3 py-1 rounded-full font-bold">POPULAR</div>
+              <h4 class="font-bold text-lg mb-2">Student</h4>
+              <div class="text-3xl font-black mb-4">$12<span class="text-lg text-gray-500">/mo</span></div>
+              <ul class="space-y-2 text-sm text-gray-400 mb-6">
+                <li>✓ Unlimited questions</li>
+                <li>✓ All subjects</li>
+                <li>✓ Helper app for parents</li>
+                <li>✓ Progress tracking</li>
+              </ul>
+              <button onclick="showUpgrade()" class="w-full bg-red-600 hover:bg-red-500 text-white py-2 rounded-lg font-semibold transition">Upgrade</button>
+            </div>
+            
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+              <h4 class="font-bold text-lg mb-2">School</h4>
+              <div class="text-3xl font-black mb-4">$5<span class="text-lg text-gray-500">/student/yr</span></div>
+              <ul class="space-y-2 text-sm text-gray-400 mb-6">
+                <li>✓ Everything in Student</li>
+                <li>✓ Admin dashboard</li>
+                <li>✓ Class management</li>
+                <li>✓ Analytics</li>
+              </ul>
+              <button onclick="alert('Contact schools@36nife.com for school pricing')" class="w-full bg-gray-800 hover:bg-gray-700 text-white py-2 rounded-lg font-semibold transition">Contact Sales</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="border-t border-gray-800 py-8 px-4">
+        <div class="max-w-4xl mx-auto text-center text-gray-500 text-sm">
+          <p>CATSUP • Part of 3.6.Nife • Runs on BBQUE Sauce</p>
+          <p class="mt-2">Never too late to catch up.</p>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Chat Interface (hidden by default) -->
+    <div id="chatPage" class="hidden flex flex-col h-screen max-w-2xl mx-auto">
+      <!-- Chat Header -->
+      <header class="p-4 border-b border-gray-800 flex items-center justify-between">
+        <button onclick="goBack()" class="flex items-center gap-2 text-gray-400 hover:text-white transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+          Back
+        </button>
+        <div class="flex items-center gap-3">
+          <span id="currentSubjectIcon" class="text-2xl">📐</span>
+          <div>
+            <h1 id="currentSubjectName" class="font-bold text-red-400">Math</h1>
+            <p class="text-xs text-gray-500">Socratic Tutoring</p>
+          </div>
+        </div>
+        <div id="chatQuestionCounter" class="text-sm text-gray-400">
+          <span id="chatQCount">10</span> left
+        </div>
+      </header>
+
+      <!-- Chat Messages -->
+      <main id="chatContainer" class="flex-1 overflow-y-auto p-4 space-y-4">
+        <!-- Welcome message added dynamically -->
+      </main>
+
+      <!-- Input Area -->
+      <footer class="p-4 border-t border-gray-800">
+        <div class="flex gap-3">
+          <input 
+            type="text" 
+            id="messageInput" 
+            placeholder="What are you stuck on?"
+            class="flex-1 bg-gray-800 text-white px-4 py-3 rounded-xl border border-gray-700 focus:border-red-500 focus:outline-none transition"
+            onkeypress="if(event.key === 'Enter') sendMessage()"
+          >
+          <button 
+            onclick="sendMessage()"
+            class="bg-red-600 hover:bg-red-500 text-white px-6 py-3 rounded-xl font-semibold transition flex items-center gap-2"
+          >
+            <span>Ask</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+            </svg>
+          </button>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Upgrade Modal -->
+    <div id="upgradeModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+      <div class="bg-gray-900 rounded-2xl p-6 max-w-md w-full border border-red-600 glow-red">
+        <div class="text-center mb-6">
+          <div class="text-5xl mb-3">🍅</div>
+          <h2 class="text-2xl font-bold text-red-400">Go Unlimited</h2>
+          <p class="text-gray-400 mt-2">No more limits. Just learning.</p>
+        </div>
+        
+        <div class="bg-gray-800 rounded-xl p-4 mb-6">
+          <div class="flex justify-between items-center mb-3">
+            <span class="text-gray-300">Student Monthly</span>
+            <span class="text-2xl font-bold text-white">$12<span class="text-sm text-gray-500">/mo</span></span>
+          </div>
+          <ul class="space-y-2 text-sm text-gray-400">
+            <li class="flex items-center gap-2">
+              <span class="text-red-400">✓</span> Unlimited questions
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-red-400">✓</span> All subjects K-PhD
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-red-400">✓</span> Helper app for parents/tutors
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-red-400">✓</span> Progress tracking
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-red-400">✓</span> Cancel anytime
+            </li>
+          </ul>
+        </div>
+
+        <button onclick="subscribePremium()" class="w-full bg-red-600 hover:bg-red-500 text-white py-3 rounded-xl font-bold transition mb-3">
+          Subscribe Now
+        </button>
+        <button onclick="hideUpgrade()" class="w-full text-gray-500 hover:text-gray-300 py-2 transition">
+          Maybe later
+        </button>
+        
+        <p class="text-center text-xs text-gray-600 mt-4">
+          Cheaper than a tutor. Better than cheating.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State
+    let currentSubject = null;
+    let freeQuestions = parseInt(localStorage.getItem('catsup_free_q') || '10');
+    let isPremium = localStorage.getItem('catsup_premium') === 'true';
+    let isTyping = false;
+    let conversationContext = [];
+
+    const subjects = {
+      math: { name: 'Math', icon: '📐' },
+      science: { name: 'Science', icon: '🔬' },
+      english: { name: 'English', icon: '📚' },
+      history: { name: 'History', icon: '🏛️' },
+      coding: { name: 'Coding', icon: '💻' },
+      languages: { name: 'Languages', icon: '🌍' },
+      testprep: { name: 'Test Prep', icon: '📝' },
+      other: { name: 'General', icon: '🎯' }
+    };
+
+    // Socratic responses by subject
+    const socraticResponses = {
+      math: [
+        "Interesting problem! Before I help, what have you tried so far?",
+        "Let's break this down. What's the first thing you notice about this equation?",
+        "What pattern do you see here? Sometimes the pattern reveals the solution.",
+        "If you had to guess the next step, what would it be? Trust your instinct.",
+        "What formula or concept do you think applies here?",
+        "Can you simplify any part of this? Sometimes smaller pieces are easier.",
+        "What would happen if you tried plugging in a simple number first?",
+        "Good thinking! Now, why do you think that step works?",
+        "You're close! What's the relationship between these two parts?",
+        "What does your answer mean in real-world terms? Does it make sense?",
+      ],
+      science: [
+        "Great question! What do you already know about this topic?",
+        "If you had to make a hypothesis, what would you guess and why?",
+        "What variables are we dealing with here?",
+        "How would you design an experiment to test this?",
+        "What's the cause and what's the effect in this scenario?",
+        "Can you think of a real-world example of this principle?",
+        "What would happen if we changed one variable?",
+        "How does this connect to something you've learned before?",
+        "What evidence supports your thinking?",
+        "If this is true, what else must be true?",
+      ],
+      english: [
+        "What's the main idea you're trying to express?",
+        "Who is your audience and what do they need to know?",
+        "What's the strongest piece of evidence for your argument?",
+        "How could you make this sentence more specific?",
+        "What's the author really trying to say here?",
+        "What word choices reveal the tone?",
+        "How does this paragraph connect to your thesis?",
+        "What would a reader who disagrees with you say?",
+        "Can you show this instead of telling it?",
+        "What's the most important thing to cut here?",
+      ],
+      history: [
+        "What was happening in the world at this time?",
+        "Who benefited from this event and who was harmed?",
+        "What would you have done if you lived in this era?",
+        "What caused this and what were the effects?",
+        "How is this similar to something happening today?",
+        "What sources tell us about this and can we trust them?",
+        "What perspectives are missing from this narrative?",
+        "How might someone from a different group view this event?",
+        "What was the turning point and why does it matter?",
+        "If this hadn't happened, what would be different today?",
+      ],
+      coding: [
+        "What's your code supposed to do vs. what it's actually doing?",
+        "Can you walk me through your logic step by step?",
+        "What error message are you getting and what does it mean?",
+        "Have you tried printing out the values at each step?",
+        "What's the simplest version of this that would work?",
+        "Is there a pattern here you could turn into a loop?",
+        "What happens at the edges - empty input, huge input, weird input?",
+        "How would you explain this code to someone who doesn't code?",
+        "What would break this code and how would you prevent it?",
+        "Is there a built-in function that does what you're trying to do?",
+      ],
+      languages: [
+        "What's the word order in this language vs. English?",
+        "Can you identify the subject, verb, and object?",
+        "What context clues help you understand this word?",
+        "How would you say this more naturally?",
+        "What's the root of this word and what does it mean?",
+        "When would a native speaker use this expression?",
+        "What's the difference between these two similar words?",
+        "Can you think of a cognate (similar word) in English?",
+        "What tense is being used and why?",
+        "How does formality change how you'd say this?",
+      ],
+      testprep: [
+        "What's this question really asking underneath the words?",
+        "Can you eliminate any obviously wrong answers?",
+        "What trap is the test maker setting here?",
+        "If you had to guess, what would be your gut answer?",
+        "What key words change the meaning of this question?",
+        "How much time should you spend on this vs. move on?",
+        "What concept is this question testing?",
+        "Can you plug the answers back in to check?",
+        "What's the pattern in how these questions work?",
+        "What would you tell a friend who asked you this?",
+      ],
+      other: [
+        "Interesting! What do you already know about this?",
+        "What's the core question you're really asking?",
+        "If you had to teach this to someone else, where would you start?",
+        "What's confusing about this specifically?",
+        "Can you break this into smaller questions?",
+        "What would help you understand this better?",
+        "What's your best guess and why?",
+        "How does this connect to something you already understand?",
+        "What would it look like if you got this right?",
+        "What's the next smallest step you could take?",
+      ]
+    };
+
+    // Get Socratic response
+    function getSocraticResponse(message, subject) {
+      const responses = socraticResponses[subject] || socraticResponses.other;
+      
+      // Add some context-awareness
+      const lower = message.toLowerCase();
+      
+      if (lower.includes("i don't know") || lower.includes("idk") || lower.includes("no idea")) {
+        return "That's okay! Not knowing is where learning starts. Let's take it back a step - what part of this DO you understand?";
+      }
+      
+      if (lower.includes("just tell me") || lower.includes("give me the answer")) {
+        return "I could give you the answer, but then you'd forget it by tomorrow. Let's build understanding that sticks. What's your best guess?";
+      }
+      
+      if (lower.includes("thanks") || lower.includes("thank you") || lower.includes("got it")) {
+        return "You did the work - I just asked questions! That understanding is yours now. What else are you working on?";
+      }
+      
+      if (lower.includes("?")) {
+        // They asked a question - respond with Socratic method
+        return responses[Math.floor(Math.random() * responses.length)];
+      }
+      
+      // They gave an answer - affirm and push deeper
+      const affirmations = [
+        "Good thinking! Now, why do you think that's the case?",
+        "You're on the right track. What's the next step?",
+        "Interesting approach! What led you to that?",
+        "That's a solid start. How would you verify that's correct?",
+        "Nice! Now can you explain it in simpler terms?",
+      ];
+      return affirmations[Math.floor(Math.random() * affirmations.length)];
+    }
+
+    // Update UI
+    function updateUI() {
+      document.getElementById('qCount').textContent = freeQuestions;
+      document.getElementById('chatQCount').textContent = freeQuestions;
+      if (isPremium) {
+        document.getElementById('questionCounter').innerHTML = '<span class="text-red-400">✓ Premium</span>';
+        document.getElementById('chatQuestionCounter').innerHTML = '<span class="text-red-400">✓ Unlimited</span>';
+      }
+    }
+
+    // Select subject and go to chat
+    function selectSubject(subject, icon) {
+      currentSubject = subject;
+      conversationContext = [];
+      
+      document.getElementById('landingPage').classList.add('hidden');
+      document.getElementById('chatPage').classList.remove('hidden');
+      
+      document.getElementById('currentSubjectIcon').textContent = subjects[subject].icon;
+      document.getElementById('currentSubjectName').textContent = subjects[subject].name;
+      
+      // Clear chat and add welcome
+      const container = document.getElementById('chatContainer');
+      container.innerHTML = '';
+      
+      const welcomeMessages = {
+        math: "Math time! 📐 I won't give you answers - I'll help you find them yourself. What problem are you working on?",
+        science: "Science mode! 🔬 Let's think like scientists. What are you curious about or stuck on?",
+        english: "English help! 📚 Whether it's writing, reading, or grammar - what are you working on?",
+        history: "History time! 🏛️ Let's explore the past together. What period or event are you studying?",
+        coding: "Code mode! 💻 Debugging or building something new? Paste your code or describe what you're trying to do.",
+        languages: "Language learning! 🌍 Which language and what are you practicing?",
+        testprep: "Test prep! 📝 Which test and what type of question? Let's strategize.",
+        other: "I'm ready to help! 🎯 What are you trying to learn or figure out?",
+      };
+      
+      addMessage(welcomeMessages[subject], false);
+    }
+
+    // Go back to landing
+    function goBack() {
+      document.getElementById('chatPage').classList.add('hidden');
+      document.getElementById('landingPage').classList.remove('hidden');
+    }
+
+    // Add message to chat
+    function addMessage(text, isUser) {
+      const container = document.getElementById('chatContainer');
+      const div = document.createElement('div');
+      div.className = `fade-in ${isUser ? 'ml-auto' : ''} max-w-[85%]`;
+      div.innerHTML = `
+        <div class="${isUser ? 'chat-bubble-user' : 'chat-bubble-ai'} rounded-2xl ${isUser ? 'rounded-tr-sm' : 'rounded-tl-sm'} p-4">
+          <p class="${isUser ? 'text-white' : 'text-gray-100'}">${text}</p>
+        </div>
+      `;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    // Show typing indicator
+    function showTyping() {
+      const container = document.getElementById('chatContainer');
+      const div = document.createElement('div');
+      div.id = 'typingIndicator';
+      div.className = 'fade-in max-w-[85%]';
+      div.innerHTML = `
+        <div class="chat-bubble-ai rounded-2xl rounded-tl-sm p-4">
+          <div class="typing-indicator flex gap-1">
+            <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
+            <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
+            <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    // Hide typing indicator
+    function hideTyping() {
+      const indicator = document.getElementById('typingIndicator');
+      if (indicator) indicator.remove();
+    }
+
+    // Send message
+    function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const message = input.value.trim();
+      
+      if (!message || isTyping) return;
+      
+      // Check free questions
+      if (!isPremium && freeQuestions <= 0) {
+        showUpgrade();
+        return;
+      }
+
+      // Add user message
+      addMessage(message, true);
+      input.value = '';
+      conversationContext.push({ role: 'user', content: message });
+
+      // Decrement free questions
+      if (!isPremium) {
+        freeQuestions--;
+        localStorage.setItem('catsup_free_q', freeQuestions.toString());
+        updateUI();
+      }
+
+      // Show typing
+      isTyping = true;
+      showTyping();
+
+      // Simulate AI thinking
+      setTimeout(() => {
+        hideTyping();
+        const response = getSocraticResponse(message, currentSubject);
+        addMessage(response, false);
+        conversationContext.push({ role: 'assistant', content: response });
+        isTyping = false;
+
+        // Show upgrade prompt if running low
+        if (!isPremium && freeQuestions === 2) {
+          setTimeout(() => {
+            addMessage("You've got 2 free questions left this week. If this is helping, consider upgrading! 🍅", false);
+          }, 1000);
+        }
+      }, 800 + Math.random() * 800);
+    }
+
+    // Show upgrade modal
+    function showUpgrade() {
+      document.getElementById('upgradeModal').classList.remove('hidden');
+    }
+
+    // Hide upgrade modal
+    function hideUpgrade() {
+      document.getElementById('upgradeModal').classList.add('hidden');
+    }
+
+    // Subscribe (mock)
+    function subscribePremium() {
+      alert('This would open Stripe Checkout for $12/month.\n\nFor now, enjoy unlimited access!');
+      isPremium = true;
+      localStorage.setItem('catsup_premium', 'true');
+      updateUI();
+      hideUpgrade();
+      if (currentSubject) {
+        addMessage("Welcome to unlimited! No more counting questions - just learning. What else are you working on?", false);
+      }
+    }
+
+    // Initialize
+    updateUI();
+  </script>
+</body>
+</html>
