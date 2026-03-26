@@ -26,13 +26,7 @@ function App() {
   // ============================================================================
 
   const [showLanding, setShowLanding] = useState(true)
-  const [isSubscribed] = useState(() => {
-    const params = new URLSearchParams(window.location.search)
-    if (params.get('subscribed') === 'true') {
-      localStorage.setItem('sauce_premium', 'true')
-    }
-    return localStorage.getItem('sauce_premium') === 'true'
-  })
+  const [isSubscribed] = useState(false)
   const [lessonCount, setLessonCount] = useState(0)
   const [question, setQuestion] = useState('')
   const [context, setContext] = useState<Context>('Mathematics')
