@@ -20,6 +20,15 @@ type Context = 'Mathematics' | 'Science' | 'History' | 'Literature' | 'Philosoph
 
 const CONTEXTS: Context[] = ['Mathematics', 'Science', 'History', 'Literature', 'Philosophy']
 
+function getPersistentUserId(): string {
+  let userId = localStorage.getItem('catsup_user_id')
+  if (!userId) {
+    userId = 'user_' + Math.random().toString(36).substr(2, 9)
+    localStorage.setItem('catsup_user_id', userId)
+  }
+  return userId
+}
+
 function App() {
   // ============================================================================
   // STATE
@@ -39,7 +48,7 @@ function App() {
   const [lesson, setLesson] = useState('')
   const [askedQuestion, setAskedQuestion] = useState('')
   const [loading, setLoading] = useState(false)
-  const [customerId] = useState<string | null>(null)
+  const [customerId] = useState<string>(() => getPersistentUserId())
 
   const freeLeft = Math.max(0, FREE_LESSON_LIMIT - lessonCount)
 
@@ -48,7 +57,7 @@ function App() {
   // ============================================================================
 
   useEffect(() => {
-    syncUsageCount('web-user')
+    syncUsageCount(customerId)
   }, [])
 
   async function syncUsageCount(cid: string) {
@@ -65,6 +74,22 @@ function App() {
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'unknown'
       console.log('Usage sync skipped:', msg)
+    }
+  }
+
+  async function persistCounterToBackend(count: number) {
+    try {
+      await fetch(`${BACKEND_URL}/api/catsup/update-usage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerId: customerId || 'anonymous',
+          usageCount: count
+        })
+      })
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : 'unknown'
+      console.log('Failed to persist counter:', msg)
     }
   }
 
@@ -115,6 +140,8 @@ function App() {
       setLesson(data.wisdom || data.lesson)
       setAskedQuestion(submittedQuestion)
       setLessonCount((prev) => prev + 1)
+      // Persist the new count to the backend immediately
+      persistCounterToBackend(lessonCount + 1)
       setQuestion('')
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Failed to process request'
